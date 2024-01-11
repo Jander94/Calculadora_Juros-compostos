@@ -10,6 +10,9 @@ export default function Calculadora() {
   const [periodo, setPeriodo] = useState(null);
   const [periodoInvestimento, setPeriodoInvestimento] = useState("");
   const [resultado, setResultado] = useState(true);
+  const [totalInvestido, setTotalInvestido] = useState(0);
+  const [ganhoEmJuros, setGanhoEmJuros] = useState(0);
+  const [total, setTotal] = useState(0);
 
   const styles = StyleSheet.create({
     container: {
@@ -79,13 +82,41 @@ export default function Calculadora() {
   }
 
   function calcular() {
+    // console.log({
+    //   valorInicial: inicial,
+    //   aporteMensal: aporteMensal,
+    //   taxaJuros: taxaJuros,
+    //   periodo: periodo,
+    //   periodoInvestimento: periodoInvestimento,
+    //   periodoJuros: periodoJuros,
+    // });
+
+    const taxaJurosMensal =
+      periodoJuros === "ANO"
+        ? parseFloat(taxaJuros) / 12 / 100
+        : parseFloat(taxaJuros) / 100;
+
+    const periodoEmMeses =
+      periodoInvestimento === "ANO"
+        ? parseFloat(periodo) * 12
+        : parseFloat(periodo);
+
+    const investido =
+      parseFloat(inicial) +
+      parseFloat(aporteMensal) * parseFloat(periodoEmMeses);
+
+    const montanteFinal =
+      (parseFloat(aporteMensal) *
+        ((1 + taxaJurosMensal) ** periodoEmMeses - 1)) /
+      taxaJurosMensal;
+
+    setTotal(montanteFinal);
+    setTotalInvestido(investido);
+    setGanhoEmJuros(montanteFinal - investido);
     console.log({
-      valorInicial: inicial,
-      aporteMensal: aporteMensal,
-      taxaJuros: taxaJuros,
-      periodo: periodo,
-      periodoInvestimento: periodoInvestimento,
-      periodoJuros: periodoJuros,
+      taxaJurosMensal: taxaJurosMensal,
+      periodoEmMeses: periodoEmMeses,
+      investido: investido,
     });
   }
 
@@ -197,17 +228,23 @@ export default function Calculadora() {
               <Text style={[styles.corTexto1, styles.bold]}>
                 Total Investido
               </Text>
-              <Text style={[styles.corTexto1]}>R$ 1.000,00</Text>
+              <Text style={[styles.corTexto1]}>
+                R$ {parseFloat(totalInvestido)?.toFixed(2)}
+              </Text>
             </View>
             <View style={styles.resultLine}>
               <Text style={[styles.corTexto1, styles.bold]}>
                 Total ganho em juros
               </Text>
-              <Text style={[styles.corTexto1]}>R$ 1.000,00</Text>
+              <Text style={[styles.corTexto1]}>
+                R$ {parseFloat(ganhoEmJuros)?.toFixed(2)}
+              </Text>
             </View>
             <View style={styles.resultLine}>
               <Text style={[styles.corTexto1, styles.bold]}>Total</Text>
-              <Text style={[styles.corTexto1]}>R$ 1.000,00</Text>
+              <Text style={[styles.corTexto1]}>
+                R$ {parseFloat(total)?.toFixed(2)}
+              </Text>
             </View>
           </View>
         )}
