@@ -82,15 +82,6 @@ export default function Calculadora() {
   }
 
   function calcular() {
-    // console.log({
-    //   valorInicial: inicial,
-    //   aporteMensal: aporteMensal,
-    //   taxaJuros: taxaJuros,
-    //   periodo: periodo,
-    //   periodoInvestimento: periodoInvestimento,
-    //   periodoJuros: periodoJuros,
-    // });
-
     const taxaJurosMensal =
       periodoJuros === "ANO"
         ? parseFloat(taxaJuros) / 12 / 100
@@ -106,20 +97,15 @@ export default function Calculadora() {
       parseFloat(aporteMensal) * parseFloat(periodoEmMeses);
 
     const montanteFinal =
-      (parseFloat(aporteMensal) *
-        ((1 + taxaJurosMensal) ** periodoEmMeses - 1)) /
-      taxaJurosMensal;
+      // M = C * (1+i)**t + A * (((1+i**t) -1)/i)
+      inicial * (1 + taxaJurosMensal) ** periodoEmMeses +
+      aporteMensal *
+        (((1 + taxaJurosMensal) ** periodoEmMeses - 1) / taxaJurosMensal);
 
     setTotal(montanteFinal);
     setTotalInvestido(investido);
     setGanhoEmJuros(montanteFinal - investido);
-    console.log({
-      taxaJurosMensal: taxaJurosMensal,
-      periodoEmMeses: periodoEmMeses,
-      investido: investido,
-    });
   }
-
   function limparCampos() {
     setInicial(null);
     setAporteMensal(null);
@@ -127,6 +113,9 @@ export default function Calculadora() {
     setPeriodo(null);
     setPeriodoJuros("");
     setPeriodoInvestimento("");
+    setTotalInvestido(0);
+    setTotal(0);
+    setGanhoEmJuros(0);
   }
 
   return (
@@ -153,7 +142,14 @@ export default function Calculadora() {
             mx="3"
             w="100%"
             value={aporteMensal}
-            onChangeText={(e) => setAporteMensal(e)}
+            onChangeText={(e) =>
+              setAporteMensal(
+                e.toLocaleString("pt-BR", {
+                  maximumFractionDigits: 2,
+                  minimumFractionDigits: 2,
+                })
+              )
+            }
           />
         </View>
         {/* *********************************************************************** */}
@@ -183,8 +179,8 @@ export default function Calculadora() {
               onValueChange={(itemValue) => setPeriodoJuros(itemValue)}
             >
               <Select.Item label="" value={null} />
-              <Select.Item label="Ano" value="ANO" />
-              <Select.Item label="Mês" value="MES" />
+              <Select.Item label="Anual" value="ANO" />
+              <Select.Item label="Mensal" value="MES" />
             </Select>
           </View>
         </View>
@@ -215,8 +211,8 @@ export default function Calculadora() {
               onValueChange={(itemValue) => setPeriodoInvestimento(itemValue)}
             >
               <Select.Item label="" value={null} />
-              <Select.Item label="Ano" value="ANO" />
-              <Select.Item label="Mês" value="MES" />
+              <Select.Item label="Anual" value="ANO" />
+              <Select.Item label="Mensal" value="MES" />
             </Select>
           </View>
         </View>
@@ -229,7 +225,11 @@ export default function Calculadora() {
                 Total Investido
               </Text>
               <Text style={[styles.corTexto1]}>
-                R$ {parseFloat(totalInvestido)?.toFixed(2)}
+                R${" "}
+                {totalInvestido.toLocaleString("pt-BR", {
+                  maximumFractionDigits: 2,
+                  minimumFractionDigits: 2,
+                })}
               </Text>
             </View>
             <View style={styles.resultLine}>
@@ -237,13 +237,21 @@ export default function Calculadora() {
                 Total ganho em juros
               </Text>
               <Text style={[styles.corTexto1]}>
-                R$ {parseFloat(ganhoEmJuros)?.toFixed(2)}
+                R${" "}
+                {ganhoEmJuros?.toLocaleString("pt-BR", {
+                  maximumFractionDigits: 2,
+                  minimumFractionDigits: 2,
+                })}
               </Text>
             </View>
             <View style={styles.resultLine}>
               <Text style={[styles.corTexto1, styles.bold]}>Total</Text>
               <Text style={[styles.corTexto1]}>
-                R$ {parseFloat(total)?.toFixed(2)}
+                R${" "}
+                {total?.toLocaleString("pt-BR", {
+                  maximumFractionDigits: 2,
+                  minimumFractionDigits: 2,
+                })}
               </Text>
             </View>
           </View>
